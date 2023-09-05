@@ -35,6 +35,18 @@
             todos = newTodos;
         }
 
+        const saveTodos = () => {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        const loadTodos = () => {
+            const loadedTodos = localStorage.getItem('todos');
+            if (loadedTodos) {
+                setTodos(JSON.parse(loadedTodos));
+                paintTodos();
+            }
+        }
+
         const getAllTodos = () => {
             return todos;
         }
@@ -44,18 +56,21 @@
             const newTodos = getAllTodos().concat({id: newId, isCompleted: false, content: text })
             setTodos(newTodos)
             paintTodos();
+            saveTodos();
         }
 
         const deleteTodo = (todoId) => {
             const newTodos = getAllTodos().filter(todo => todo.id !== todoId );
             setTodos(newTodos);
-            paintTodos()
+            paintTodos();
+            saveTodos();
         }
 
         const completeTodo = (todoId) => {
             const newTodos = getAllTodos().map(todo => todo.id === todoId ? {...todo,  isCompleted: !todo.isCompleted} : todo )
             setTodos(newTodos);
             paintTodos();
+            saveTodos();
         }
 
         const updateTodo = (text, todoId) => {
@@ -63,6 +78,7 @@
             const newTodos = currentTodos.map(todo => todo.id === todoId ? ({...todo, content: text}) : todo);
             setTodos(newTodos);
             paintTodos();
+            saveTodos();
         }
 
         const onDbclickTodo = (e, todoId) => {
@@ -128,9 +144,11 @@
         }
 
         const init = () => {
+            loadTodos();
             todoInputElem.addEventListener('keypress', (e) =>{
                 if( e.key === 'Enter' ){
-                    appendTodos(e.target.value); todoInputElem.value ='';
+                    appendTodos(e.target.value); 
+                    todoInputElem.value ='';
                 }
             })
         }
